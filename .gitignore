@@ -1,0 +1,6 @@
+.settings/**
+bin/**
+_classpath*
+_project*
+!raspberrypi_firmware/**
+*.ini
