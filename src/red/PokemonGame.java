@@ -220,11 +220,10 @@ public class PokemonGame
 		GymLeaderDirectory.add(new Trainer("Sabrina", new SeenPokemon(100, new Alakazam(), null).setMoves(new Psybeam(), new Disable(), new Toxic(), new Dig()), new SeenPokemon(100, new Kadabra(), null).setMoves(new Disable(), new Psybeam(), new Reflect(), new SeismicToss()), new SeenPokemon(100, new MrMime(), null).setMoves(new DoubleSlap(), new Psychic(), new ThunderWave(), new SolarBeam()), new SeenPokemon(100, new Hypno(), null).setMoves(new Hypnosis(), new DreamEater(), new Confusion(), new MegaPunch()), new SeenPokemon(100, new Exeggutor(), null).setMoves(new LeechSeed(), new Toxic(), new MegaDrain(), new Psywave()), new SeenPokemon(100, new Jynx(), null).setMoves(new LovelyKiss(), new IcePunch(), new Psywave(), new BubbleBeam())));
 		GymLeaderDirectory.add(new Trainer("Blaine", new SeenPokemon(100, new Rapidash(), null).setMoves(new Agility(), new Stomp(), new FireSpin(), new HornDrill()), new SeenPokemon(100, new Arcanine(), null).setMoves(new FireBlast(), new BodySlam(), new DragonRage(), new Dig()), new SeenPokemon(100, new Charizard(), null).setMoves(new Slash(), new Flamethrower(), new Fly(), new Earthquake()), new SeenPokemon(100, new Magmar(), null).setMoves(new BodySlam(), new Psychic(), new FirePunch(), new ConfuseRay()), new SeenPokemon(100, new Clefable(), null).setMoves(new Flamethrower(), new IceBeam(), new Thunderbolt(), new ThunderWave()), new SeenPokemon(100, new Kangaskhan(), null).setMoves(new Thunderbolt(), new FireBlast(), new Surf(), new Earthquake())));
 		GymLeaderDirectory.add(new Trainer("Giovanni", new SeenPokemon(100, new Persian(), null).setMoves(new Toxic(), new Slash(), new Thunderbolt(), new BubbleBeam()), new SeenPokemon(100, new Dugtrio(), null).setMoves(new SandAttack(), new Slash(), new Dig(), new RockSlide()), new SeenPokemon(100, new Nidoqueen(), null).setMoves(new DoubleKick(), new Strength(), new Surf(), new Earthquake()), new SeenPokemon(100, new Nidoking(), null).setMoves(new HornDrill(), new Thunder(), new Blizzard(), new Toxic()), new SeenPokemon(100, new Rhydon(), null).setMoves(new FuryAttack(), new Earthquake(), new BodySlam(), new Fissure()), new SeenPokemon(100, new Tauros(), null).setMoves(new Thunder(), new FireBlast(), new Blizzard(), new Stomp())));
-
 	}
+	
 	private void setNatures()
 	{
-		
 		NatureDirectory.add(Adamant);
 		NatureDirectory.add(Brave);
 		NatureDirectory.add(Careful);
@@ -250,8 +249,8 @@ public class PokemonGame
 		NatureDirectory.add(Rash);
 		NatureDirectory.add(Sassy);
 		NatureDirectory.add(Timid);
-		
 	}
+	
 	public void setMoves() 
 	{
 		MoveDirectory.add(new MegaPunch());

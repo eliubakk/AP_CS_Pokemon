@@ -52,17 +52,19 @@ public class Battle {
 	public void beginBattle()
 	{
 		
-		do{
-			do{
+		do
+		{
+			do
+			{
 				PickAction();
 				ExecuteAction();
-			}while(cancel);
+			} while(cancel);
 			TrainerAction();
 			ExecuteTurn();
 		    FinishTurn();
 		    BlackedOut();
 			
-		}while(!t.isBlackedOut() && !you.isBlackedOut());
+		} while(!t.isBlackedOut() && !you.isBlackedOut());
 		EndBattle();
 	}
 	
@@ -105,6 +107,7 @@ public class Battle {
 				
 		case 1: pickSwitch(true);
 				break;
+				
 		case 5: doWhat = 0;
 			 	break;
 		}
@@ -131,7 +134,8 @@ public class Battle {
 		int i = HeroPokemon;
 		int back = 0;
 
-		do{
+		do
+		{
 			System.out.println("Send in what pokemon? (0-" + (you.numberOfPokemonAlive() - 1) + ", or " + (you.numberOfPokemonAlive()) + " to cancel)");
 			you.PrintTeam();
 			back = sc.nextInt();
@@ -190,33 +194,32 @@ public class Battle {
 	{
 		switch(doWhat)
 		{
-		case 0:
-			TurnOrder();
-			if(first)
-			{
-				UseHeroMove();
+			case 0:
+				TurnOrder();
+				if(first)
+				{
+					UseHeroMove();
+					UseTrainerMove();
+					Flinched(1);
+					TrainerPokeFaint();
+					HeroPokeFaint();
+				}
+				else
+				{
+					UseTrainerMove();
+					UseHeroMove();
+					Flinched(0);
+					HeroPokeFaint();
+					TrainerPokeFaint();
+				}
+				break;
+			case 1:
+				switchPokemon();
+			case 2:
+			case 3:
 				UseTrainerMove();
-				Flinched(1);
-				TrainerPokeFaint();
-				HeroPokeFaint();
-			}
-			else
-			{
-			
-				UseTrainerMove();
-				UseHeroMove();
-				Flinched(0);
 				HeroPokeFaint();
 				TrainerPokeFaint();
-			}
-			break;
-		case 1:
-			switchPokemon();
-		case 2:
-		case 3:
-			UseTrainerMove();
-			HeroPokeFaint();
-			TrainerPokeFaint();
 		}
 	}
 	
@@ -284,6 +287,8 @@ public class Battle {
 	
 	private void TurnOrder()
 	{
+		first = false;
+		
 		if(HeroMove != 5)
 		{
 			if(TrainerMove != 5)
@@ -304,19 +309,7 @@ public class Battle {
 							first = true;
 					}
 				}
-				else
-				{
-					first = false;
-				}
 			}
-			else
-			{
-				first = true;
-			}
-		}
-		else
-		{
-			first = false;
 		}
 	}
 	
@@ -327,8 +320,7 @@ public class Battle {
 			System.out.println(you.name + "'s " + ownPoke.getPoke().name + " used " + ownPoke.getMove(HeroMove).ID + "!");
 			//Owned.getMove(HeroMove).Attack(Owned, trainer);
 			ownPoke.Attack(trainerPoke, HeroMove);
-		}
-		
+		}	
 	}
 	
 	private void UseTrainerMove()
@@ -347,11 +339,15 @@ public class Battle {
 		Trainer flinchedTrainer = new Trainer();
 		switch(i)
 		{
-		case 0: flinchedPoke = ownPoke;
-		        flinchedTrainer = you;
+			case 0: 
+				flinchedPoke = ownPoke;
+				flinchedTrainer = you;
 				break;
-		case 1: flinchedPoke = trainerPoke;
+				
+			case 1: 
+				flinchedPoke = trainerPoke;
 		        flinchedTrainer = t;
+		        break;
 		}
 		
 		if(flinchedPoke.getFlinched())
@@ -389,11 +385,12 @@ public class Battle {
 			TrainerPokemon = t.OrganizeTeam(TrainerPokemon);
 			if(!t.isBlackedOut())
 			{
-				do{
-				TrainerPokemon = t.chooseSwitch(TrainerPokemon, ownPoke);
-				trainerPoke = t.getTeam().get(TrainerPokemon);
-				TrainerMove = 5;
-				}while(!trainerPoke.isAlive());
+				do
+				{
+					TrainerPokemon = t.chooseSwitch(TrainerPokemon, ownPoke);
+					trainerPoke = t.getTeam().get(TrainerPokemon);
+					TrainerMove = 5;
+				} while(!trainerPoke.isAlive());
 				System.out.println(t.getName() + " sent out " + trainerPoke.getPoke().name + "!");
 			}
 		}
@@ -414,7 +411,6 @@ public class Battle {
 	
 	private void EndBattle()
 	{
-		
 		HeroMove = 5;
 		TrainerMove = 5;
 		LastHeroMoveUsed = HeroMove;

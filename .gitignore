@@ -4,3 +4,6 @@ _classpath*
 _project*
 !raspberrypi_firmware/**
 *.ini
+/bin/
+.project
+.classpath
