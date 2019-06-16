@@ -115,6 +115,7 @@ public class Trainer extends Person
 	{
 		team.set(5, sixth);
 	}
+	
 	public ArrayList<SeenPokemon> getTeam()
 	{
 		return team;

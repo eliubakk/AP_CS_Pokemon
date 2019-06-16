@@ -36,10 +36,10 @@ public class DrawPanel extends JPanel implements ActionListener
 	public DrawPanel(Hero h, Trainer t) throws IOException
 	{
 		//background = ImageIO.read(new File("battle_background.png"));
-		background = ImageIO.read(new File("PlatinumBattleBackground.png"));
-		FrontSprites = ImageIO.read(new File("firered-leafgreen.png"));
-		BackSprites = ImageIO.read(new File("firered-leafgreen-back.png"));
-		HealthBar = ImageIO.read(new File("HealthBar.png"));
+		background = ImageIO.read(new File("img/PlatinumBattleBackground.png"));
+		FrontSprites = ImageIO.read(new File("img/firered-leafgreen.png"));
+		BackSprites = ImageIO.read(new File("img/firered-leafgreen-back.png"));
+		HealthBar = ImageIO.read(new File("img/HealthBar.png"));
 		this.h = h;
 		this.t = t;
 		for(int i = 0; i < 2; i++)

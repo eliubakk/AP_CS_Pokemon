@@ -22,17 +22,23 @@ public class Battle {
 	boolean cancel = false;
 	boolean first = false;
 	boolean heroPokemonIsAlive;
+	// ????
 	boolean Switched = false;
 	
-	public static int HeroMove = 5;
-	public static int LastHeroMoveUsed = 5;
+	public static final int NoAction = 5;	
+	public static final int AttackAction = 0;
+	public static final int SwitchAction = 1;
+	public static final int BagAction = 2;
+	public static final int RunAction = 3;
+	
+	public static int HeroMove = NoAction;
+	public static int LastHeroMoveUsed = NoAction;
 	public static int HeroPokemon = 0;
 	public static int NewHeroPokemon = 0;
-	public static int TrainerMove = 5;
-	public static int LastTrainerMoveUsed = 5;
+	public static int TrainerMove = NoAction;
+	public static int LastTrainerMoveUsed = NoAction;
 	public static int TrainerPokemon = 0;
 	public static int NewTrainerPokemon = 0;
-	
 	
 	public Battle(Hero h, Trainer fighter)
 	{
@@ -51,108 +57,152 @@ public class Battle {
 	
 	public void beginBattle()
 	{
-		
 		do
 		{
 			do
 			{
 				PickAction();
 				ExecuteAction();
-			} while(cancel);
+			} while (cancel);
 			TrainerAction();
 			ExecuteTurn();
 		    FinishTurn();
 		    BlackedOut();
-			
-		} while(!t.isBlackedOut() && !you.isBlackedOut());
+		} while (!t.isBlackedOut() && !you.isBlackedOut());
 		EndBattle();
 	}
 	
-	private int PickAction()
+	// Pick an action to perform
+	private void PickAction()
 	{
-		do{
-			if(LastHeroMoveUsed != 5? ownPoke.getMove(LastHeroMoveUsed).getCurrentTurnCompletion() < 1: true)
-			{
-				if(LastHeroMoveUsed != 5)
-					ownPoke.getMove(LastHeroMoveUsed).setCurrentTurnCompletion(ownPoke.getMove(LastHeroMoveUsed).getMaxTurnCompletion());
-				System.out.println("What do you want to do? (0-Attack,1-Switch,2-Bag,3-Run)");
-				System.out.println(ownPoke);
-				System.out.println(trainerPoke);
-				
-				numInTeamAlive = you.numberOfPokemonAlive();
-				doWhat = sc.nextInt();
-				if(numInTeamAlive <= 1 && doWhat == 1)
-				{
-					System.out.println("You have no other pokemon are viable to battle!");
-					doWhat = -1;
-				}
-			}
-			else
-			{
-				HeroMove = LastHeroMoveUsed;
-				doWhat = 5;
-				cancel = false;
-			}
-		}while(doWhat == -1);
-		
-		return doWhat;
+		// Cancel is not set in true because the execute portions will set this
+		if (LastHeroMoveUsed != NoAction ? ownPoke.getMove(LastHeroMoveUsed).getCurrentTurnCompletion() < 1 : true)
+		{
+			if(LastHeroMoveUsed != NoAction)
+				ownPoke.getMove(LastHeroMoveUsed).setCurrentTurnCompletion(ownPoke.getMove(LastHeroMoveUsed).getMaxTurnCompletion());
+			System.out.println("What do you want to do? (0-Attack,1-Switch,2-Bag,3-Run)");
+			System.out.println(ownPoke);
+			System.out.println(trainerPoke);
+			
+			numInTeamAlive = you.numberOfPokemonAlive();
+			doWhat = sc.nextInt();
+		}
+		else
+		{
+			HeroMove = LastHeroMoveUsed;
+			doWhat = NoAction;
+			cancel = false;
+		}
 	}
 	
+	// Do the action chosen by PickAction()
+	// Will reroute to another action
 	private void ExecuteAction()
 	{
 		switch(doWhat)
 		{
-		case 0: pickMove();
-				break;
+			case AttackAction: 
+				pickMove();
+				return;
 				
-		case 1: pickSwitch(true);
-				break;
+			case SwitchAction: 
+				pickSwitch(false);
+				return;
 				
-		case 5: doWhat = 0;
-			 	break;
+			case NoAction: 
+				doWhat = NoAction;
+			 	return;
+			 	
+			case BagAction:
+				
+			case RunAction:
+			 	
+			default: 
+				cancel = true;
+				System.out.println("That isn't a valid choice, choose again.");
 		}
 	}
 	
+	// Chose a valid move for the Pokemon to do or to cancel picking a move
 	private int pickMove()
 	{
-		System.out.println("Use which move? (0-" + (ownPoke.getMoves().size() - 1) + ", or " + ownPoke.getMoves().size() + " to cancel)");
-		ownPoke.PrintMoves();
-		HeroMove = sc.nextInt();
-		if(HeroMove == ownPoke.getMoves().size())
+		// Get a valid move
+		do 
+		{
+			System.out.println("Use which move? (0-" + (ownPoke.getMoves().size() - 1) + ", or " + ownPoke.getMoves().size() + " to cancel)");
+			ownPoke.PrintMoves();
+			HeroMove = sc.nextInt();
+		} while(HeroMove > ownPoke.getMoves().size() || HeroMove < 0);
+		
+		// See if user wanted to cancel
+		cancel = (HeroMove == ownPoke.getMoves().size());
+		
+		/*if(HeroMove == ownPoke.getMoves().size())
 		{
 			cancel = true;
 		    LastHeroMoveUsed = 5;
 		}
 		else
-			cancel = false;
+			cancel = false;*/
+		
 		return HeroMove;
 	}
 	
-	private int pickSwitch(boolean beginning)
+	// Chose a valid Pokemon to switch to
+	private int pickSwitch(boolean pokeFainted)
 	{
+		if (numInTeamAlive <= 1)
+		{
+			System.out.println("You have no other pokemon viable to battle!");
+			cancel = true;
+			return 0;
+		}
+		
 		you.setPokemon(HeroPokemon, ownPoke);
 		int i = HeroPokemon;
 		int back = 0;
 
 		do
 		{
-			System.out.println("Send in what pokemon? (0-" + (you.numberOfPokemonAlive() - 1) + ", or " + (you.numberOfPokemonAlive()) + " to cancel)");
-			you.PrintTeam();
-			back = sc.nextInt();
+			do
+			{
+				// Maybe print if only 
+				System.out.println("Send in what pokemon? (0-" + (you.numberOfPokemonAlive() - 1) + ", or " + (you.numberOfPokemonAlive()) + " to cancel)");
+				you.PrintTeam();
+				back = sc.nextInt();
+			} while (back < 0 || back > you.numberOfPokemonAlive());
 			
 			if(back == you.numberOfPokemonAlive())
+			{
 				cancel = true;
+				return 0;
+			}
 			else
 			{
+				// Not yet?
 				ownPoke.setLastDamageTaken(0);
+				// ??????
 				you.setPokemon(HeroPokemon, ownPoke);
 				NewHeroPokemon = back;
 				cancel = false;
+				// ????
 				Switched = true;
 			}	
 			
-			if(beginning)
+			if(pokeFainted)
 			{	
+				if(cancel || NewHeroPokemon == i)
+				{
+					System.out.println("Your pokemon is dead dumbass, switch them out!");
+					cancel = false;	
+				}
+				else
+				{
+					NewHeroPokemon = i;
+				}
+			}
+			else
+			{
 				if(NewHeroPokemon == i && !cancel)
 					System.out.println(ownPoke.getPoke().name + " is already in Battle!");
 				
@@ -160,23 +210,14 @@ public class Battle {
 					heroPokemonIsAlive = you.getTeam().get(NewHeroPokemon).isAlive();
 					if(!heroPokemonIsAlive)
 						System.out.println(you.getTeam().get(NewHeroPokemon).getPoke().name + " is not viable for battle!");
-				}
-				catch(IndexOutOfBoundsException e){
+				} catch(IndexOutOfBoundsException e){
 					heroPokemonIsAlive = false;
 					if(!cancel)
 						System.out.println("Dumbass, that isn't a number I said you can choose!");
 				}
 			}
-			else
-			{
-				if(cancel || NewHeroPokemon == i)
-				{
-					System.out.println("Your pokemon is dead dumbass, switch them out!");
-					cancel = false;
-					NewHeroPokemon = i;
-				}
-			}
-		}while((NewHeroPokemon == i || !heroPokemonIsAlive) && !cancel);
+		} while ((NewHeroPokemon == i || !heroPokemonIsAlive) && !cancel);
+		
 		return NewHeroPokemon;
 	}
 	
@@ -186,15 +227,15 @@ public class Battle {
 		System.out.println("Go " + you.getTeam().get(NewHeroPokemon).getPoke().name + "!");
 		ownPoke = (CaughtPokemon) you.getTeam().get(NewHeroPokemon);
 		HeroPokemon = NewHeroPokemon; 
-		HeroMove = 5;
-		LastHeroMoveUsed = 5;
+		HeroMove = NoAction;
+		LastHeroMoveUsed = NoAction;
 	}
 	
 	private void ExecuteTurn()
 	{
 		switch(doWhat)
 		{
-			case 0:
+			case AttackAction:
 				TurnOrder();
 				if(first)
 				{
@@ -213,10 +254,10 @@ public class Battle {
 					TrainerPokeFaint();
 				}
 				break;
-			case 1:
+			case SwitchAction:
 				switchPokemon();
-			case 2:
-			case 3:
+			case BagAction:
+			case RunAction:
 				UseTrainerMove();
 				HeroPokeFaint();
 				TrainerPokeFaint();
@@ -248,8 +289,8 @@ public class Battle {
 		ownPoke.setLastMoveUsed(LastHeroMoveUsed);
 		LastTrainerMoveUsed = TrainerMove;
 		trainerPoke.setLastMoveUsed(LastTrainerMoveUsed);
-		HeroMove = 5;
-		TrainerMove = 5;
+		HeroMove = NoAction;
+		TrainerMove = NoAction;
 		t.setPokemon(TrainerPokemon, trainerPoke);
 		TrainerPokemon = t.OrganizeTeam(TrainerPokemon);
 		you.setPokemon(HeroPokemon, ownPoke);
@@ -258,26 +299,27 @@ public class Battle {
 	
 	private void TrainerAction()
 	{
-		if(LastTrainerMoveUsed == 5? true: trainerPoke.getMove(LastTrainerMoveUsed).getCurrentTurnCompletion() < 1)
+		if(LastTrainerMoveUsed == NoAction ? true: trainerPoke.getMove(LastTrainerMoveUsed).getCurrentTurnCompletion() < 1)
 		{
 			trainerDoWhat = t.BattleAI(TrainerPokemon, ownPoke);
 			switch(trainerDoWhat)
 			{
-			case 0:
-				TrainerMove = t.chooseMove(TrainerPokemon, ownPoke);
-				break;
-			case 1:
-				trainerPoke.setLastDamageTaken(0);
-				t.setPokemon(TrainerPokemon, trainerPoke);
-				System.out.println(t.getName() + " called back " + trainerPoke.getPoke().name + "!");
-				do{
-					TrainerPokemon = t.chooseSwitch(TrainerPokemon, ownPoke);
-					trainerPoke = t.getTeam().get(TrainerPokemon);
-				}while(!trainerPoke.isAlive());
-				System.out.println(t.getName() + " sent out " + trainerPoke.getPoke().name + "!");
-				TrainerMove = 5;
-				break;
-			}
+				case 0:
+					TrainerMove = t.chooseMove(TrainerPokemon, ownPoke);
+					break;
+				case 1:
+					trainerPoke.setLastDamageTaken(0);
+					t.setPokemon(TrainerPokemon, trainerPoke);
+					System.out.println(t.getName() + " called back " + trainerPoke.getPoke().name + "!");
+					do
+					{
+						TrainerPokemon = t.chooseSwitch(TrainerPokemon, ownPoke);
+						trainerPoke = t.getTeam().get(TrainerPokemon);
+					} while (!trainerPoke.isAlive());
+					System.out.println(t.getName() + " sent out " + trainerPoke.getPoke().name + "!");
+					TrainerMove = NoAction;
+					break;
+				}
 		}
 		else
 		{
@@ -289,9 +331,9 @@ public class Battle {
 	{
 		first = false;
 		
-		if(HeroMove != 5)
+		if(HeroMove != NoAction)
 		{
-			if(TrainerMove != 5)
+			if(TrainerMove != NoAction)
 			{
 				if(ownPoke.getMove(HeroMove).getPriority() > trainerPoke.getMove(TrainerMove).getPriority())
 				{
@@ -315,7 +357,7 @@ public class Battle {
 	
 	private void UseHeroMove()
 	{
-		if(ownPoke.enactCondition(true) && ownPoke.isAlive() && HeroMove != 5  && !ownPoke.getFlinched())
+		if(ownPoke.enactCondition(true) && ownPoke.isAlive() && HeroMove != NoAction  && !ownPoke.getFlinched())
 		{
 			System.out.println(you.name + "'s " + ownPoke.getPoke().name + " used " + ownPoke.getMove(HeroMove).ID + "!");
 			//Owned.getMove(HeroMove).Attack(Owned, trainer);
@@ -325,7 +367,7 @@ public class Battle {
 	
 	private void UseTrainerMove()
 	{
-		if(trainerPoke.enactCondition(true) && TrainerMove != 5 && trainerPoke.isAlive() && !trainerPoke.getFlinched())
+		if(trainerPoke.enactCondition(true) && TrainerMove != NoAction && trainerPoke.isAlive() && !trainerPoke.getFlinched())
 		{
 			System.out.println(t.name + "'s " + trainerPoke.getPoke().name + " used " + trainerPoke.getMove(TrainerMove).ID + "!");
 			//trainer.getMove(TrainerMove).Attack(trainer, Owned);
@@ -366,11 +408,11 @@ public class Battle {
 			HeroPokemon = you.OrganizeTeam(HeroPokemon);
 			if(!you.isBlackedOut())
 			{
-				pickSwitch(false);
+				pickSwitch(true);
 				System.out.println("Go " + you.getTeam().get(NewHeroPokemon).getPoke().name + "!");
 				ownPoke = (CaughtPokemon) you.getTeam().get(NewHeroPokemon);
 				HeroPokemon = NewHeroPokemon;
-				HeroMove = 5;
+				HeroMove = NoAction;
 			}
 		}
 	}
@@ -389,7 +431,7 @@ public class Battle {
 				{
 					TrainerPokemon = t.chooseSwitch(TrainerPokemon, ownPoke);
 					trainerPoke = t.getTeam().get(TrainerPokemon);
-					TrainerMove = 5;
+					TrainerMove = NoAction;
 				} while(!trainerPoke.isAlive());
 				System.out.println(t.getName() + " sent out " + trainerPoke.getPoke().name + "!");
 			}
@@ -411,9 +453,8 @@ public class Battle {
 	
 	private void EndBattle()
 	{
-		HeroMove = 5;
-		TrainerMove = 5;
-		LastHeroMoveUsed = HeroMove;
+		LastHeroMoveUsed = HeroMove = NoAction;
+		TrainerMove = NoAction;
 		ownPoke.setLastMoveUsed(LastHeroMoveUsed);
 		LastTrainerMoveUsed = TrainerMove;
 		trainerPoke.setLastMoveUsed(LastTrainerMoveUsed);
